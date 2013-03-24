@@ -8,8 +8,8 @@ class State {
   private:
     // first 32 bits    = cost
     // second 32 bits   = state descriptor
-    // state descriptor = 0-30 bit => student state
-    //                    31   bit => flashlight state
+    // state descriptor = 0-15 bit => student state
+    //                    16   bit => flashlight state
     unsigned long long int state;
   public:
     State* parent;
@@ -18,13 +18,14 @@ class State {
     State(int, int, int);
 
     // methods
+    void fixCost(int);
     int getCost() const;
     int getState() const;
     int getStatus(int) const;
     int getFlashlightStatus() const;
     unsigned long long int getHash() const;
 
-    static int getAcceptableState(int);
+    static State* getAcceptableState(int);
     static State* transitionSingle(State*, int, int);
     static State* transitionPair(State*, int, int, int);
 

@@ -1,107 +1,116 @@
+#include "state.h"
 #include "students.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <cstdio>
-#include <iostream>
-#include <algorithm>
+#include <vector>
 #include <queue>
 #include <stack>
 #include <string>
+#include <algorithm>
+
+#include <iostream>
+#include <map>
 
 using namespace std;
 
 #define MAX (MAX_STUDENTS + 2)
 
-int cost[(1 << MAX) + 1];
+int r_cost[(1 << MAX) + 1]; // real cost
+int f_cost[(1 << MAX) + 1]; // estimated final cost
 
-class State_t {
-  private:
-    int state;
+int CLOSED[(1 << MAX) + 1];
+
+class cmp{
   public:
-    State_t* prev;
-
-    State_t() {state = 0; prev = NULL;}
-
-    void set(int i) {
-      state |= 1 << i;
-    }
-
-    int get(int i) {
-      return (state >> i) & 1;
-    }
-
-    void inv(int i) {
-      state ^= 1 << i;
-    }
-
-    int getState() const {
-      return state;
+    bool operator() (const State* a, const State* b) {
+      return a->getCost() > b->getCost();
     }
 };
 
-class cmp {
-  public:
-    bool operator() (const State_t* a, const State_t* b) {
-      return cost[a->getState()] > cost[b->getState()];
-    }
-};
+int heuristika(State* start, State* end, Students *s) {
+  return 0;
+}
 
-void solve_uniform_cost_search(Students* s) {
-  memset(cost, 63, sizeof cost);
-  priority_queue< State_t*, vector< State_t* >, cmp > q;
-
-  State_t* start = new State_t();
-  State_t* end = new State_t();
-
+void solve_a_star(Students *s) {
   int VISITED = 0;
-  State_t* SOLUTION;
+  priority_queue< State*, vector< State* >, cmp > q;
 
-  // creating the final state
-  for (int i = 0; i < s->getCount(); ++i) { end->set(i); } end->set(17);
+  memset(r_cost, 63, sizeof r_cost);
+  memset(f_cost, 63, sizeof f_cost);
+  memset(CLOSED, 0, sizeof CLOSED);
 
-  cost[0] = 0;
+  State* start = new State(0, 0, RIGHT);
+  State* goal = State::getAcceptableState(s->getCount());
+  State* SOLUTION = NULL;
 
-  for (q.push(start); !q.empty(); q.pop()) {
-    State_t *next, *now = q.top();
-    int addCost;
+  r_cost[0] = 0;
+  f_cost[0] = heuristika(start, goal, s);
 
-    VISITED = VISITED + 1;
-    if (now->getState() == end->getState()) {
+  start->fixCost(f_cost[0]);
+
+  for (q.push(start); !q.empty(); ) {
+    State* now = q.top();   q.pop();
+
+    if (CLOSED[now->getState()] == 0) {
+      VISITED = VISITED + 1;
+      CLOSED[now->getState()] = 2;
+    } else if (CLOSED[now->getState()] == 1) {
+      CLOSED[now->getState()] = 2;
+    } else {
+      continue;
+    }
+
+    if (now->getState() == goal->getState()) {
       SOLUTION = now;
       break;
     }
 
-    for (int i = 0; i < s->getCount(); ++i) {
-      if (now->get(i) != now->get(17)) continue;
-      next = new State_t(*now);
-      next->prev = now;
+    if (now->getFlashlightStatus() == RIGHT) {
+      // send them in pair
+      // if the flashlight is on the right
+      for (int i = 0; i < s->getCount(); ++i) {
+        if (now->getFlashlightStatus() != now->getStatus(i)) continue;
+        for (int j = i + 1; j < s->getCount(); ++j) {
+          if (now->getStatus(i) != now->getStatus(j)) continue;
 
-      next->inv(i);
-      next->inv(17);
+          int addCost = max(s->getTime(i), s->getTime(j));
+          State* next = State::transitionPair(now, i, j, 0);
 
-      addCost = s->getTime(i);
+          if (r_cost[next->getState()] > r_cost[now->getState()] + addCost) {
+            if (CLOSED[next->getState()] == 2) { CLOSED[next->getState()] = 1; }
 
-      if (cost[next->getState()] > cost[now->getState()] + addCost) {
-        cost[next->getState()] = cost[now->getState()] + addCost;
-        q.push(next);
+            int h = heuristika(next, goal, s);
+            r_cost[next->getState()] = r_cost[now->getState()] + addCost;
+            f_cost[next->getState()] = r_cost[next->getState()] + h;
+
+            next->fixCost(f_cost[next->getState()]);
+
+            q.push(next);
+          }
+        }
       }
+    } else {
+      // send them single
+      // if the flashlight is on the left
+      for (int i = 0; i < s->getCount(); ++i) {
+        if (now->getFlashlightStatus() != now->getStatus(i)) continue;
 
-      for (int j = i + 1; j < s->getCount(); ++j) {
-        if (now->get(i) != now->get(j)) continue;
-        next = new State_t(*now);
-        next->prev = now;
+        int addCost = s->getTime(i);
+        State* next = State::transitionSingle(now, i, 0);
 
-        next->inv(i);
-        next->inv(j);
+        if (r_cost[next->getState()] > r_cost[now->getState()] + addCost) {
+          if (CLOSED[next->getState()] == 2) { CLOSED[next->getState()] = 1; }
 
-        next->inv(17);
+          int h = heuristika(next, goal, s);
+          r_cost[next->getState()] = r_cost[now->getState()] + addCost;
+          f_cost[next->getState()] = r_cost[next->getState()] + h;
 
-        addCost = max(s->getTime(i), s->getTime(j));
+          next->fixCost(f_cost[next->getState()]);
 
-        if (cost[next->getState()] <= cost[now->getState()] + addCost) continue;
-
-        cost[next->getState()] = cost[now->getState()] + addCost;
-        q.push(next);
+          q.push(next);
+        }
       }
     }
 
@@ -109,25 +118,25 @@ void solve_uniform_cost_search(Students* s) {
 
   // print the solution
   stack< string > sol;
-  cout << cost[SOLUTION->getState()] << " " << VISITED << endl;
+  cout << SOLUTION->getCost() << " " << VISITED << endl;
 
-  while (SOLUTION->prev != NULL) {
-    State_t* curr = SOLUTION;
-    State_t* prev = SOLUTION->prev;
+  while (SOLUTION->parent != NULL) {
+    State* curr = SOLUTION;
+    State* prev = SOLUTION->parent;
     string step;
 
-    int mask = (curr->getState() ^ prev->getState()) & 0x0000ffff;
+    int mask = curr->getState() ^ prev->getState();
 
     for (int i = 0; i < s->getCount(); ++i) {
-      if (((mask >> i) & 1) == 1) {
+      if (((mask >> i) & 1) == LEFT) {
         step += s->getStrTime(i) + " ";
       }
     }
 
-    step += curr->get(17) ? "->\n" : "<-\n";
+    step += curr->getFlashlightStatus() ? "->\n" : "<-\n";
     sol.push(step);
 
-    SOLUTION = SOLUTION->prev;
+    SOLUTION = SOLUTION->parent;
   }
 
   while (sol.empty() == false) {
@@ -138,7 +147,7 @@ void solve_uniform_cost_search(Students* s) {
   return;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   int t;
   vector< int > time;
 
@@ -146,7 +155,7 @@ int main(int argc, char** argv) {
 
   Students* problem = new Students(time);
 
-  solve_uniform_cost_search(problem);
+  solve_a_star(problem);
 
   delete problem;
 

@@ -20,45 +20,48 @@ struct cmp {
 void solve_uniform_cost_search(Students* s) {
   priority_queue< State*, vector< State* >, cmp > q;
 
+  State* goal = State::getAcceptableState(s->getCount());
   State* start = new State(0, 0, RIGHT);
 
   int VISITED = 0;
   State* SOLUTION = NULL;
 
-  int goal = State::getAcceptableState(s->getCount());
-
   for (q.push(start); !q.empty(); q.pop()) {
     State* now = q.top();
 
     VISITED = VISITED + 1;
-    if (goal == now->getState() && now->getFlashlightStatus() == LEFT) {
+    if (goal->getState() == now->getState()) {
       SOLUTION = now;
       break;
     }
 
-    // sending them in pairs
-    for (int i = 0; i < s->getCount(); ++i) {
-      if (now->getStatus(i) != now->getFlashlightStatus()) continue;
+    if (now->getFlashlightStatus() == RIGHT) {
+      // right - >left
+      // sending them in pairs
+      for (int i = 0; i < s->getCount(); ++i) {
+        if (now->getStatus(i) != now->getFlashlightStatus()) continue;
 
-      for (int j = i + 1; j < s->getCount(); ++j) {
-        if (now->getStatus(i) != now->getStatus(j)) continue;
+        for (int j = i + 1; j < s->getCount(); ++j) {
+          if (now->getStatus(i) != now->getStatus(j)) continue;
 
-        State* next = State::transitionPair(now, i, j, max(s->getTime(i), s->getTime(j)));
-        next->parent = now;
+          State* next = State::transitionPair(now, i, j, max(s->getTime(i), s->getTime(j)));
+
+          q.push(next);
+        }
+      }
+
+    } else {
+      // left->right
+      // sending them alone
+      for (int i = 0; i < s->getCount(); ++i) {
+        if (now->getStatus(i) != now->getFlashlightStatus()) continue;
+
+        State* next = State::transitionSingle(now, i, s->getTime(i));
 
         q.push(next);
       }
     }
 
-    // sending them alone
-    for (int i = 0; i < s->getCount(); ++i) {
-      if (now->getStatus(i) != now->getFlashlightStatus()) continue;
-
-      State* next = State::transitionSingle(now, i, s->getTime(i));
-      next->parent = now;
-
-      q.push(next);
-    }
   }
 
   // print the solution
