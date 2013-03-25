@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -g
 
 PROJECT = labos1
-SOURCE = state.cpp students.cpp vjezba1.cpp
+SOURCE = state.cpp students.cpp a_star.cpp
 OBJECT = ${SOURCE:.cpp=.o}
 
 all: $(SOURCE) $(PROJECT)
