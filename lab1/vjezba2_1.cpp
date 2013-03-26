@@ -43,6 +43,8 @@ int heuristika(State* start, State* end, Students *s) {
 }
 
 void solve_a_star(Students *s) {
+  if (s->getCount() == 0) return;
+
   int VISITED = 0;
   priority_queue< State*, vector< State* >, cmp > q;
 
@@ -76,9 +78,9 @@ void solve_a_star(Students *s) {
       break;
     }
 
-    if (now->getFlashlightStatus() == RIGHT) {
+    if (now->getFlashlightStatus() == RIGHT && s->getCount() > 1) {
       // send them in pair
-      // if the flashlight is on the right
+      // if the flashlight is on the right and we have more than one student
       for (int i = 0; i < s->getCount(); ++i) {
         if (now->getFlashlightStatus() != now->getStatus(i)) continue;
         for (int j = i + 1; j < s->getCount(); ++j) {
@@ -102,7 +104,7 @@ void solve_a_star(Students *s) {
       }
     } else {
       // send them single
-      // if the flashlight is on the left
+      // if the flashlight is on the left or we have just one student
       for (int i = 0; i < s->getCount(); ++i) {
         if (now->getFlashlightStatus() != now->getStatus(i)) continue;
 

@@ -18,6 +18,7 @@ struct cmp {
 };
 
 void solve_uniform_cost_search(Students* s) {
+  if (s->getCount() == 0) return;
   priority_queue< State*, vector< State* >, cmp > q;
 
   State* goal = State::getAcceptableState(s->getCount());
@@ -35,7 +36,7 @@ void solve_uniform_cost_search(Students* s) {
       break;
     }
 
-    if (now->getFlashlightStatus() == RIGHT) {
+    if (now->getFlashlightStatus() == RIGHT && s->getCount() > 1) {
       // right - >left
       // sending them in pairs
       for (int i = 0; i < s->getCount(); ++i) {
