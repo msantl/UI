@@ -115,38 +115,14 @@ void solve_a_star(Students *s) {
       break;
     }
 
-    if (now->getFlashlightStatus() == RIGHT && s->getCount() > 1) {
-      // send them in pair
-      // if the flashlight is on the right and we have more than one student
-      for (int i = 0; i < s->getCount(); ++i) {
-        if (now->getFlashlightStatus() != now->getStatus(i)) continue;
-        for (int j = i + 1; j < s->getCount(); ++j) {
-          if (now->getStatus(i) != now->getStatus(j)) continue;
+    // send them in pair
+    for (int i = 0; i < s->getCount(); ++i) {
+      if (now->getFlashlightStatus() != now->getStatus(i)) continue;
+      for (int j = i + 1; j < s->getCount(); ++j) {
+        if (now->getStatus(i) != now->getStatus(j)) continue;
 
-          int addCost = max(s->getTime(i), s->getTime(j));
-          State* next = State::transitionPair(now, i, j, 0);
-
-          if (r_cost[next->getState()] > r_cost[now->getState()] + addCost) {
-            if (CLOSED[next->getState()] == 2) { CLOSED[next->getState()] = 1; }
-
-            int h = heuristika(next, goal, s);
-            r_cost[next->getState()] = r_cost[now->getState()] + addCost;
-            f_cost[next->getState()] = r_cost[next->getState()] + h;
-
-            next->fixCost(f_cost[next->getState()]);
-
-            q.push(next);
-          }
-        }
-      }
-    } else {
-      // send them single
-      // if the flashlight is on the left or we have just one student
-      for (int i = 0; i < s->getCount(); ++i) {
-        if (now->getFlashlightStatus() != now->getStatus(i)) continue;
-
-        int addCost = s->getTime(i);
-        State* next = State::transitionSingle(now, i, 0);
+        int addCost = max(s->getTime(i), s->getTime(j));
+        State* next = State::transitionPair(now, i, j, 0);
 
         if (r_cost[next->getState()] > r_cost[now->getState()] + addCost) {
           if (CLOSED[next->getState()] == 2) { CLOSED[next->getState()] = 1; }
@@ -159,6 +135,25 @@ void solve_a_star(Students *s) {
 
           q.push(next);
         }
+      }
+    }
+    // send them single
+    for (int i = 0; i < s->getCount(); ++i) {
+      if (now->getFlashlightStatus() != now->getStatus(i)) continue;
+
+      int addCost = s->getTime(i);
+      State* next = State::transitionSingle(now, i, 0);
+
+      if (r_cost[next->getState()] > r_cost[now->getState()] + addCost) {
+        if (CLOSED[next->getState()] == 2) { CLOSED[next->getState()] = 1; }
+
+        int h = heuristika(next, goal, s);
+        r_cost[next->getState()] = r_cost[now->getState()] + addCost;
+        f_cost[next->getState()] = r_cost[next->getState()] + h;
+
+        next->fixCost(f_cost[next->getState()]);
+
+        q.push(next);
       }
     }
 

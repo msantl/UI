@@ -36,31 +36,26 @@ void solve_uniform_cost_search(Students* s) {
       break;
     }
 
-    if (now->getFlashlightStatus() == RIGHT && s->getCount() > 1) {
-      // right - >left
-      // sending them in pairs
-      for (int i = 0; i < s->getCount(); ++i) {
-        if (now->getStatus(i) != now->getFlashlightStatus()) continue;
+    // sending them in pairs
+    for (int i = 0; i < s->getCount(); ++i) {
+      if (now->getStatus(i) != now->getFlashlightStatus()) continue;
 
-        for (int j = i + 1; j < s->getCount(); ++j) {
-          if (now->getStatus(i) != now->getStatus(j)) continue;
+      for (int j = i + 1; j < s->getCount(); ++j) {
+        if (now->getStatus(i) != now->getStatus(j)) continue;
 
-          State* next = State::transitionPair(now, i, j, max(s->getTime(i), s->getTime(j)));
-
-          q.push(next);
-        }
-      }
-
-    } else {
-      // left->right
-      // sending them alone
-      for (int i = 0; i < s->getCount(); ++i) {
-        if (now->getStatus(i) != now->getFlashlightStatus()) continue;
-
-        State* next = State::transitionSingle(now, i, s->getTime(i));
+        State* next = State::transitionPair(now, i, j, max(s->getTime(i), s->getTime(j)));
 
         q.push(next);
       }
+    }
+
+    // sending them alone
+    for (int i = 0; i < s->getCount(); ++i) {
+      if (now->getStatus(i) != now->getFlashlightStatus()) continue;
+
+      State* next = State::transitionSingle(now, i, s->getTime(i));
+
+      q.push(next);
     }
 
   }
