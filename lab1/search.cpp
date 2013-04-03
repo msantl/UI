@@ -1,5 +1,6 @@
 #include "state.h"
 #include "students.h"
+#include "search.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -15,12 +16,8 @@
 
 using namespace std;
 
-#define MAX (MAX_STUDENTS + 2)
-
-int r_cost[(1 << MAX) + 1]; // real cost
-int f_cost[(1 << MAX) + 1]; // estimated final cost
-
-int CLOSED[(1 << MAX) + 1];
+// MUST BE DEFINED SOMEWHERE ELSE
+int heuristika(State* start, State* end, Students *s);
 
 class cmp{
   public:
@@ -28,28 +25,6 @@ class cmp{
       return a->getCost() > b->getCost();
     }
 };
-
-int heuristika(State* start, State* end, Students *s) {
-  // n-th and (n-1)-th are going together
-  // ...
-  int maks = 0;
-  vector< int > vremena;
-
-  for (int i = 0; i < s->getCount(); ++i) {
-    if (start->getStatus(i) == RIGHT) {
-      vremena.push_back(s->getTime(i));
-    }
-  }
-
-  sort(vremena.begin(), vremena.end());
-  reverse(vremena.begin(), vremena.end());
-
-  for (int i = 0; i < (int)vremena.size(); i += 2) {
-    maks += vremena[i];
-  }
-
-  return maks;
-}
 
 void solve_a_star(Students *s) {
   if (s->getCount() == 0) return;

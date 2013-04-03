@@ -1,25 +1,22 @@
 CC = g++
 CFLAGS = -Wall -g
 
-COMMON_S = state.cpp students.cpp
+COMMON_S = state.cpp students.cpp search.cpp
 COMMON_O = ${COMMON_S:.cpp=.o}
 
-all: ucs 0_a_star 1_a_star 2_a_star 3_a_star
+all: 0_a_star 1_a_star 2_a_star 3_a_star
 
-ucs: vjezba1.o $(COMMON_O)
-	$(CC) $(CFLAGS) $(COMMON_O) vjezba1.o -o $@
+0_a_star: vjezba1_h0.o $(COMMON_O)
+	$(CC) $(CFLAGS) $(COMMON_O) vjezba1_h0.o -o $@
 
-0_a_star: vjezba1_opt.o $(COMMON_O)
-	$(CC) $(CFLAGS) $(COMMON_O) vjezba1_opt.o -o $@
+1_a_star: vjezba1_h1.o $(COMMON_O)
+	$(CC) $(CFLAGS) $(COMMON_O) vjezba1_h1.o -o $@
 
-1_a_star: vjezba2_1.o $(COMMON_O)
-	$(CC) $(CFLAGS) $(COMMON_O) vjezba2_1.o -o $@
+2_a_star: vjezba1_h2.o $(COMMON_O)
+	$(CC) $(CFLAGS) $(COMMON_O) vjezba1_h2.o -o $@
 
-2_a_star: vjezba2_2.o $(COMMON_O)
-	$(CC) $(CFLAGS) $(COMMON_O) vjezba2_2.o -o $@
-
-3_a_star: a_star.o $(COMMON_O)
-	$(CC) $(CFLAGS) $(COMMON_O) a_star.o -o $@
+3_a_star: vjezba1_h3.o $(COMMON_O)
+	$(CC) $(CFLAGS) $(COMMON_O) vjezba1_h3.o -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) -c $< -o $@
