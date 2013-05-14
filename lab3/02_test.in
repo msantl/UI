@@ -1,0 +1,38 @@
+Oblik* = izduzen | okrugli | zaoblen
+Povrsina* = glatka | hrapava
+Boja* = zelena | zuta | zuta-smeda | crvena | plava | narancasta
+Broj_sjemenki* = >1 | 1
+Vrsta_sjemenke* = visestruke | kostunjasta
+Promjer* = >10 | <10
+Vrsta_vocke* = loza | stablo
+Voce = banana | lubenica | dinja | kanalupe | jabuka | marelica | visnja | breskva | sljiva | naranca
+
+IF Oblik = izduzen & Boja = zelena | zuta
+THEN Voce = banana
+IF Oblik = okrugli | zaoblen & Promjer = >10
+THEN Vrsta_vocke = loza
+IF Oblik = okrugli & Promjer = <10
+THEN Vrsta_vocke = stablo
+IF Broj_sjemenki = 1
+THEN Vrsta_sjemenke = kostunjasta
+IF Broj_sjemenki = >1
+THEN Vrsta_sjemenke = visestruke
+IF Vrsta_vocke = loza & Boja = zelena
+THEN Voce = lubenica
+IF Vrsta_vocke = loza & Povrsina = glatka & Boja = zuta
+THEN Voce = dinja
+IF Vrsta_vocke = loza & Povrsina = hrapava & Boja = zuto-smeda
+THEN Voce = kanalupe
+IF Vrsta_vocke = stablo & Boja = narancasta & Vrsta_sjemenke = kostunjasta
+THEN Voce = marelica
+IF Vrsta_vocke = stablo & Boja = narancasta & Vrsta_sjemenke = visestruke
+THEN Voce = naranca
+IF Vrsta_vocke = stablo & Boja = crvena & Vrsta_sjemenke = kostunjasta
+THEN Voce = visnja
+IF Vrsta_vocke = stablo & Boja = narancasta & Vrsta_sjemenke = kostunjasta
+THEN Voce = breskva
+IF Vrsta_vocke = stablo & Boja = zuta | zelena | crvena & Vrsta_sjemenke = visestruke
+THEN Voce = jabuka
+IF Vrsta_vocke = stablo & Boja = plava & Vrsta_sjemenke = kostunjasta
+THEN Voce = sljiva
+

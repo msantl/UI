@@ -1,0 +1,23 @@
+NasalCongestion* = da | ne
+Viremia* = da | ne
+Diagnose = influenza 
+RunnyNose* = da | ne
+Body-aches* = da | ne
+Achiness* = da | ne
+Temp* = <100 | >100
+Fever* = da | ne
+Headache* = da | ne
+Cough* = da | ne
+
+IF NasalCongestion = da & Viremia = da 
+THEN Diagnose = influenza
+IF RunnyNose = da
+THEN NasalCongestion = da
+IF Body-aches = da
+THEN Achiness = da
+IF Temp = >100
+THEN Fever = da
+IF Headache = da
+THEN Achiness = da
+IF Fever = da & Achiness = da & Cough = da
+THEN Viremia = da
