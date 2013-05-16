@@ -53,11 +53,7 @@ def solve(cilj, pravila, varijable):
     vrati_se_na_korak_2 = False
     # u svakom koraku ispis RM, KS i pravila koje pali
 
-    # print radna memorija
-    print_RM()
-
     vrh_stoga = STOG.pop()
-    print "-> Vrh stoga", vrh_stoga
 
     # sva pravila koja zadovoljavaju desni cilj
     for pravilo in pravila:
@@ -69,13 +65,15 @@ def solve(cilj, pravila, varijable):
     # drzimo konfliktni skup prioritetnim :)
     KONFLIKTNI_SKUP.sort(key=lambda pravilo: int(pravilo.prioritet), reverse=True);
 
-    # print konfliktni skup
-    print_KS()
-
     while len(KONFLIKTNI_SKUP) > 0:
       pravilo = KONFLIKTNI_SKUP.pop(0)
       # while petlja u slucaju vracanja na korak 4
       while 1:
+        # ispis stanja sustava
+        print_KS()
+        print_RM()
+        print "Razmatram pravilo: ", pravilo.naziv
+
         premise_zadovoljene = True
         premise_nema_radnoj_memoriji = None
         # provjera zadovoljenosti premisa
