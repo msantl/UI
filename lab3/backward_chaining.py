@@ -58,15 +58,24 @@ def solve(cilj, pravila, varijable):
     # sva pravila koja zadovoljavaju desni cilj
     for pravilo in pravila:
       if vrh_stoga in pravilo.konzekvens:
-        if pravilo not in VISITED:
-          if pravilo not in KONFLIKTNI_SKUP:
-            KONFLIKTNI_SKUP.append(pravilo)
+        if vrh_stoga not in RADNA_MEMORIJA or pravilo.konzekvens[vrh_stoga] == RADNA_MEMORIJA[vrh_stoga]:
+          if pravilo not in VISITED:
+            if pravilo not in KONFLIKTNI_SKUP:
+              KONFLIKTNI_SKUP.append(pravilo)
 
     # drzimo konfliktni skup prioritetnim :)
     KONFLIKTNI_SKUP.sort(key=lambda pravilo: int(pravilo.prioritet), reverse=True);
 
     while len(KONFLIKTNI_SKUP) > 0:
       pravilo = KONFLIKTNI_SKUP.pop(0)
+      # ako sam mozda izveo nesto pa ne trebam pravilo gledati
+      dokazali_smo_suprotno = False
+      for var in pravilo.konzekvens:
+        if var in RADNA_MEMORIJA and RADNA_MEMORIJA[var] != pravilo.konzekvens[var]:
+          dokazali_smo_suprotno = True
+      if dokazali_smo_suprotno:
+        continue
+
       # while petlja u slucaju vracanja na korak 4
       while 1:
         # ispis stanja sustava
@@ -107,6 +116,7 @@ def solve(cilj, pravila, varijable):
 
           # dodaj u radnu memoriju
           for premisa in pravilo.konzekvens:
+            #if premisa not in RADNA_MEMORIJA:
             RADNA_MEMORIJA[premisa] = pravilo.konzekvens[premisa]
 
           vrati_se_na_korak_2 = True
