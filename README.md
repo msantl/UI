@@ -3,14 +3,18 @@ UI
 
 Artificial Intelligence laboratory assignments
 
-## 1. laboratory assignment - Night bridge crossing problem
+## 1. laboratory assignment
 
-1. blind search, uniform cost
-2. A\* algorithm with folowing heuristics
-  1. the time needed for remaining students to cross is greater or equal to the time needed for the slowest one
-  2. the time needed for remaining students to cross is greater or equal to the sum of following crossings:
-     * slowest and second slowest are going together
-     * third slowest and fourth slowest are going together
-     * fifth slowest and sixth slowest are going together
-     * ....
-  
+Night bridge crossing problem
+
+## 2. laboratory assignment
+
+Proposition logic
+
+## 3. laboratory assignment
+
+Expert system shell
+
+## 4. laboratory assignment 
+
+Neural network 
