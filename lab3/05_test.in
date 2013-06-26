@@ -1,0 +1,35 @@
+A* = a1 | a2 | a3
+B* = b1 | b2 | b3
+C* = c1 | c2 | c3
+D* = d1 | d2 | d3
+E* = e1 | e2 | e3
+
+IF A = a3
+THEN B = b2
+
+IF D = d1
+THEN B = b1 & E = e1
+
+IF A = a2
+THEN B = b1 & E = e1
+
+IF B = b2 
+THEN C = c1 & E = e3
+
+IF D = d2
+THEN C = c3
+
+IF D = d3
+THEN C = c3
+
+IF E = e1
+THEN B = b3
+
+IF D = d2
+THEN A = a2 & C = c2
+
+IF B = b1
+THEN A = a2 & C = c2
+
+IF D = d1 
+THEN A = a1
